@@ -1,0 +1,11 @@
+﻿<Application x:Class="RegisterDocs.GUI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:RegisterDocs.GUI"
+             xmlns:converter="clr-namespace:RegisterDocs.GUI.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <converter:DoubleConverter x:Key="DoubleConverter"/>
+        <converter:DateTimeConverter x:Key="DateTimeConverter"/>
+    </Application.Resources>
+</Application>
