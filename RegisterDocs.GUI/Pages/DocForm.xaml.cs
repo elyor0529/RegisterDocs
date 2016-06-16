@@ -43,7 +43,7 @@ namespace RegisterDocs.GUI.Pages
 
         using (var db = new DocDatabase())
         {
-          var docs = db.GetCollection<Docs>();
+          var docs = db.GetCollection<Doc>();
           var doc = docs.FindById(_id);
 
           BugungiSana.SelectedDate = doc.BugungiSana;
@@ -75,8 +75,8 @@ namespace RegisterDocs.GUI.Pages
       {
         using (var db = new DocDatabase())
         {
-          var docs = db.GetCollection<Docs>();
-          Docs doc;
+          var docs = db.GetCollection<Doc>();
+          Doc doc;
 
           if (_id > 0)
           {
@@ -101,7 +101,7 @@ namespace RegisterDocs.GUI.Pages
           {
             //TODO: add
 
-            doc = new Docs
+            doc = new Doc
             {
               BugungiSana = BugungiSana.Text.AsDateTime(),
               IsActive = true,
@@ -154,7 +154,7 @@ namespace RegisterDocs.GUI.Pages
       {
         using (var db = new DocDatabase())
         {
-          var docs = db.GetCollection<Docs>();
+          var docs = db.GetCollection<Doc>();
 
           docs.Delete(_id);
         }

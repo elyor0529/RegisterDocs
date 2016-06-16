@@ -28,7 +28,7 @@ namespace RegisterDocs.GUI.Controls
 
     private void UserControl_Loaded(object sender, RoutedEventArgs e)
     {
-      var doc = (Docs)DataContext;
+      var doc = (Doc)DataContext;
       if (doc != null)
       {
         var colour = doc.TegishliBoychaOrganQolganKun.GetColour();

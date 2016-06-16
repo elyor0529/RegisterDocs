@@ -35,16 +35,16 @@ namespace RegisterDocs.GUI
 
     private readonly BackgroundWorker _worker;
     private readonly System.Timers.Timer _timer;
-    private IEnumerable<Docs> _items;
+    private IEnumerable<Doc> _items;
     private const string SELECT_OPTIONAL_VALUE = "[...]";
     private int _topRowIndex;
 
     private void FillFilterFields()
     {
 
-      using (var db = new DocDatabase())
+      using (var uow = new DocDatabase())
       {
-        var docs = db.GetCollection<Docs>();
+        var docs = uow.GetCollection<Doc>();
 
         if (ComboBoxKelibTushgan.HasItems)
           ComboBoxKelibTushgan.Items.Clear();
@@ -152,7 +152,7 @@ namespace RegisterDocs.GUI
       }
       else
       {
-        var items = (IEnumerable<Docs>)runWorkerCompletedEventArgs.Result;
+        var items = (IEnumerable<Doc>)runWorkerCompletedEventArgs.Result;
         var pageIndex = Paging1.PageIndex;
         var pageSize = Paging1.PageSize;
         _topRowIndex = (pageIndex - 1) * pageSize;
@@ -175,7 +175,7 @@ namespace RegisterDocs.GUI
     {
       using (var db = new DocDatabase())
       {
-        var docs = db.GetCollection<Docs>();
+        var docs = db.GetCollection<Doc>();
         var filterModel = (FilterViewModel)doWorkEventArgs.Argument;
         var query = docs.Find(w => w.IsActive == filterModel.IsActive);
 
@@ -244,7 +244,7 @@ namespace RegisterDocs.GUI
       if (DataGrid1.SelectedCells.Count == 0)
         return;
 
-      var item = (Docs)DataGrid1.SelectedCells[0].Item;
+      var item = (Doc)DataGrid1.SelectedCells[0].Item;
 
       if (item == null)
         return;

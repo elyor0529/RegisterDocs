@@ -45,7 +45,7 @@ namespace RegisterDocs
       return false;
     }
 
-    public static void CalculateColourStatus(this Docs doc)
+    public static void CalculateColourStatus(this Doc doc)
     {
       //calculate
       doc.TegishliBoychaOrganQolganKun = (doc.MuddatiUzaytirilganSana - doc.TegishliBoychaOrganSana)?.Days;

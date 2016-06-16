@@ -11,7 +11,7 @@ namespace RegisterDocs.Helpers
 {
   public static class ExcelHelper
   {
-    public static string Export(this IEnumerable<Docs> items)
+    public static string Export(this IEnumerable<Doc> items)
     {
       var templateFile = String.Format("{0}\\Templates\\doc_template.xlsx", Environment.CurrentDirectory);
       var exportPath = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(Path.GetTempFileName(), ".xlsx"));

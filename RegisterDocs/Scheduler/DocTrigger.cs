@@ -14,7 +14,7 @@ namespace RegisterDocs.Scheduler
     {
       using (var db = new DocDatabase())
       {
-        var docs = db.GetCollection<Docs>();
+        var docs = db.GetCollection<Doc>();
         var ids = docs.Find(w => w.IsActive == true).Select(s => s.Id).ToArray();
         var partitions = Partitioner.Create(0, ids.Length, 100);
 
