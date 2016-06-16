@@ -11,17 +11,24 @@ namespace RegisterDocs.Demo
 {
   internal static class Program
   {
-    private static void Main(string[] args)
+    static void Main(string[] args)
+    {
+      Run();
+
+      Console.ReadKey();
+    }
+
+    private static void Run()
     {
       var timer = new Stopwatch();
 
       timer.Start();
+
       DocTrigger.Execute();
+
       timer.Stop();
 
       Console.WriteLine("Done!({0} sek)", timer.ElapsedMilliseconds / 1000);
-
-      Console.ReadKey();
     }
   }
 }

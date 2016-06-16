@@ -42,16 +42,19 @@ namespace RegisterDocs.GUI
     private void FillFilterFields()
     {
 
-      var db = new RegisterDocsDbContext();
+      using (var db = new DocDatabase())
+      {
+        var docs = db.GetCollection<Docs>();
 
-      if (ComboBoxKelibTushgan.HasItems)
-        ComboBoxKelibTushgan.Items.Clear();
+        if (ComboBoxKelibTushgan.HasItems)
+          ComboBoxKelibTushgan.Items.Clear();
 
-      var items = db.Docs.Select(s => s.QayerdanKelibTushgan).Distinct();
-      ComboBoxKelibTushgan.Items.Add(SELECT_OPTIONAL_VALUE);
-      foreach (var item in items)
-        ComboBoxKelibTushgan.Items.Add(item);
+        var items = docs.FindAll().Select(s => s.QayerdanKelibTushgan).Distinct();
 
+        ComboBoxKelibTushgan.Items.Add(SELECT_OPTIONAL_VALUE);
+        foreach (var item in items)
+          ComboBoxKelibTushgan.Items.Add(item);
+      }
     }
 
     private void Run()
@@ -116,10 +119,10 @@ namespace RegisterDocs.GUI
 
     }
 
-    private async void Timer_Elapsed(object sender, ElapsedEventArgs e)
+    private void Timer_Elapsed(object sender, ElapsedEventArgs e)
     {
 
-      await DocTrigger.Execute();
+      DocTrigger.Execute();
 
       Dispatcher.Invoke(() =>
       {
@@ -170,31 +173,30 @@ namespace RegisterDocs.GUI
 
     private void WorkerOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
     {
-      var db = new RegisterDocsDbContext();
-      var filterModel = (FilterViewModel)doWorkEventArgs.Argument;
-      var query = db.Docs.Where(w => w.IsActive == filterModel.IsActive);
-
-      if (filterModel.Colour != null)
+      using (var db = new DocDatabase())
       {
-        query = query.AsEnumerable()
-          .Where(w => filterModel.Colour.CheckColour(w.TegishliBoychaOrganQolganKun) || filterModel.Colour.CheckColour(w.HalEtishMuddat))
-          .AsQueryable();
+        var docs = db.GetCollection<Docs>();
+        var filterModel = (FilterViewModel)doWorkEventArgs.Argument;
+        var query = docs.Find(w => w.IsActive == filterModel.IsActive);
+
+        if (filterModel.Colour != null)
+        {
+          query = query.Where(w => filterModel.Colour.CheckColour(w.TegishliBoychaOrganQolganKun) || filterModel.Colour.CheckColour(w.HalEtishMuddat));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filterModel.KelibTushgan))
+        {
+          query = query.Where(w => w.QayerdanKelibTushgan.CompareTo(filterModel.KelibTushgan) == 0);
+        }
+
+        var models = query.OrderBy(o => new
+        {
+          o.HalEtishMuddat,
+          o.TegishliBoychaOrganQolganKun
+        }).ToArray();
+
+        doWorkEventArgs.Result = models;
       }
-
-      if (!string.IsNullOrWhiteSpace(filterModel.KelibTushgan))
-      {
-        query = query.AsEnumerable()
-          .Where(w => w.QayerdanKelibTushgan.CompareTo(filterModel.KelibTushgan) == 0)
-          .AsQueryable();
-      }
-
-      var models = query.OrderBy(o => new
-      {
-        o.HalEtishMuddat,
-        o.TegishliBoychaOrganQolganKun
-      }).ToArray();
-
-      doWorkEventArgs.Result = models;
     }
 
     private void ExportButton_Click(object sender, RoutedEventArgs e)

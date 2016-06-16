@@ -1,7 +1,7 @@
-﻿using RegisterDocs.Models;
+﻿using LiteDB;
+using RegisterDocs.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace RegisterDocs.GUI.Pages
 
     public DocForm(int id) : this()
     {
-      _id = id; 
+      _id = id;
     }
 
     public DocForm()
@@ -41,19 +41,22 @@ namespace RegisterDocs.GUI.Pages
 
         buttonDelete.Visibility = Visibility.Visible;
 
-        var db = new RegisterDocsDbContext();
-        var doc = db.Docs.Find(_id);
+        using (var db = new DocDatabase())
+        {
+          var docs = db.GetCollection<Docs>();
+          var doc = docs.FindById(_id);
 
-        BugungiSana.SelectedDate = doc.BugungiSana;
-        IshtirokchiXodim.Text = doc.IshtirokchiXodim;
-        JismoniyShaxsTur.Text = doc.JismoniyShaxsTur?.ToString();
-        KelibTushganSana.SelectedDate = doc.KelibTushganSana;
-        MuddatiUzaytirilganSana.SelectedDate = doc.MuddatiUzaytirilganSana;
-        MurojaatMazmun.Text = doc.MurojaatMazmun;
-        QayerdanKelibTushgan.Text = doc.QayerdanKelibTushgan;
-        TegishliBoychaOrganIdora.Text = doc.TegishliBoychaOrganIdora;
-        TegishliBoychaOrganSana.SelectedDate = doc.TegishliBoychaOrganSana;
-        YuridikShaxsTur.Text = doc.YuridikShaxsTur?.ToString();
+          BugungiSana.SelectedDate = doc.BugungiSana;
+          IshtirokchiXodim.Text = doc.IshtirokchiXodim;
+          JismoniyShaxsTur.Text = doc.JismoniyShaxsTur?.ToString();
+          KelibTushganSana.SelectedDate = doc.KelibTushganSana;
+          MuddatiUzaytirilganSana.SelectedDate = doc.MuddatiUzaytirilganSana;
+          MurojaatMazmun.Text = doc.MurojaatMazmun;
+          QayerdanKelibTushgan.Text = doc.QayerdanKelibTushgan;
+          TegishliBoychaOrganIdora.Text = doc.TegishliBoychaOrganIdora;
+          TegishliBoychaOrganSana.SelectedDate = doc.TegishliBoychaOrganSana;
+          YuridikShaxsTur.Text = doc.YuridikShaxsTur?.ToString();
+        }
       }
       else
       {
@@ -70,55 +73,64 @@ namespace RegisterDocs.GUI.Pages
     {
       try
       {
-        var db = new RegisterDocsDbContext();
-        Docs doc;
-
-        if (_id > 0)
+        using (var db = new DocDatabase())
         {
-          //TODO: edit
-          doc = db.Docs.Find(_id);
-          doc.BugungiSana = BugungiSana.Text.AsDateTime();
-          doc.IshtirokchiXodim = IshtirokchiXodim.Text;
-          doc.JismoniyShaxsTur = JismoniyShaxsTur.Text.AsInt();
-          doc.KelibTushganSana = KelibTushganSana.Text.AsDateTime();
-          doc.MuddatiUzaytirilganSana = MuddatiUzaytirilganSana.Text.AsDateTime();
-          doc.MurojaatMazmun = MurojaatMazmun.Text;
-          doc.QayerdanKelibTushgan = QayerdanKelibTushgan.Text;
-          doc.TegishliBoychaOrganIdora = TegishliBoychaOrganIdora.Text;
-          doc.TegishliBoychaOrganSana = TegishliBoychaOrganSana.Text.AsDateTime();
-          doc.YuridikShaxsTur = YuridikShaxsTur.Text.AsInt();
+          var docs = db.GetCollection<Docs>();
+          Docs doc;
 
-          doc.CalculateColourStatus();
-
-          db.Docs.Attach(doc);
-          db.Entry(doc).State = EntityState.Modified;
-        }
-        else
-        {
-          //TODO: add
-
-          doc = new Docs
+          if (_id > 0)
           {
-            BugungiSana = BugungiSana.Text.AsDateTime(),
-            IsActive = true,
-            IshtirokchiXodim = IshtirokchiXodim.Text,
-            JismoniyShaxsTur = JismoniyShaxsTur.Text.AsInt(),
-            KelibTushganSana = KelibTushganSana.Text.AsDateTime(),
-            MuddatiUzaytirilganSana = MuddatiUzaytirilganSana.Text.AsDateTime(),
-            MurojaatMazmun = MurojaatMazmun.Text,
-            QayerdanKelibTushgan = QayerdanKelibTushgan.Text,
-            TegishliBoychaOrganIdora = TegishliBoychaOrganIdora.Text,
-            TegishliBoychaOrganSana = TegishliBoychaOrganSana.Text.AsDateTime(),
-            YuridikShaxsTur = YuridikShaxsTur.Text.AsInt()
-          };
+            //TODO: edit
+            doc = docs.FindById(_id);
+            doc.BugungiSana = BugungiSana.Text.AsDateTime();
+            doc.IshtirokchiXodim = IshtirokchiXodim.Text;
+            doc.JismoniyShaxsTur = JismoniyShaxsTur.Text.AsInt();
+            doc.KelibTushganSana = KelibTushganSana.Text.AsDateTime();
+            doc.MuddatiUzaytirilganSana = MuddatiUzaytirilganSana.Text.AsDateTime();
+            doc.MurojaatMazmun = MurojaatMazmun.Text;
+            doc.QayerdanKelibTushgan = QayerdanKelibTushgan.Text;
+            doc.TegishliBoychaOrganIdora = TegishliBoychaOrganIdora.Text;
+            doc.TegishliBoychaOrganSana = TegishliBoychaOrganSana.Text.AsDateTime();
+            doc.YuridikShaxsTur = YuridikShaxsTur.Text.AsInt();
 
-          doc.CalculateColourStatus();
+            doc.CalculateColourStatus();
 
-          db.Docs.Add(doc);
-          db.Entry(doc).State = EntityState.Added;
+            docs.Update(doc);
+          }
+          else
+          {
+            //TODO: add
+
+            doc = new Docs
+            {
+              BugungiSana = BugungiSana.Text.AsDateTime(),
+              IsActive = true,
+              IshtirokchiXodim = IshtirokchiXodim.Text,
+              JismoniyShaxsTur = JismoniyShaxsTur.Text.AsInt(),
+              KelibTushganSana = KelibTushganSana.Text.AsDateTime(),
+              MuddatiUzaytirilganSana = MuddatiUzaytirilganSana.Text.AsDateTime(),
+              MurojaatMazmun = MurojaatMazmun.Text,
+              QayerdanKelibTushgan = QayerdanKelibTushgan.Text,
+              TegishliBoychaOrganIdora = TegishliBoychaOrganIdora.Text,
+              TegishliBoychaOrganSana = TegishliBoychaOrganSana.Text.AsDateTime(),
+              YuridikShaxsTur = YuridikShaxsTur.Text.AsInt()
+            };
+
+            doc.CalculateColourStatus();
+
+            docs.Insert(doc);
+
+          }
+
+          docs.EnsureIndex(a => a.IsActive);
+          docs.EnsureIndex(a => a.QayerdanKelibTushgan);
+          docs.EnsureIndex(a => a.TegishliBoychaOrganQolganKun);
+          docs.EnsureIndex(a => a.HalEtishMuddat);
+          docs.EnsureIndex(a => a.MuddatiUzaytirilganSana);
+          docs.EnsureIndex(a => a.TegishliBoychaOrganSana);
+          docs.EnsureIndex(a => a.KelibTushganSana);
+          docs.EnsureIndex(a => a.BugungiSana);
         }
-
-        db.SaveChanges();
 
         DialogResult = true;
       }
@@ -140,12 +152,12 @@ namespace RegisterDocs.GUI.Pages
 
       try
       {
-        var db = new RegisterDocsDbContext();
-        var doc = db.Docs.Find(_id);
+        using (var db = new DocDatabase())
+        {
+          var docs = db.GetCollection<Docs>();
 
-        db.Docs.Remove(doc);
-        db.Entry(doc).State = EntityState.Deleted;
-        db.SaveChanges();
+          docs.Delete(_id);
+        }
 
         DialogResult = true;
       }
