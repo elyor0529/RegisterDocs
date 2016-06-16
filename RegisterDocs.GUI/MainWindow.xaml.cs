@@ -68,8 +68,8 @@ namespace RegisterDocs.GUI
       var filterModel = new FilterViewModel
       {
         IsActive = CheckBoxStatus.IsChecked,
-        Colour = ComboBoxColour.SelectedIndex == -1 ? null : ComboBoxColour.SelectedValue == SELECT_OPTIONAL_VALUE ? null : (DocColours?)ComboBoxColour.SelectedValue,
-        KelibTushgan = ComboBoxKelibTushgan.SelectedIndex == -1 ? null : ComboBoxKelibTushgan.SelectedValue == SELECT_OPTIONAL_VALUE ? null : (string)ComboBoxKelibTushgan.SelectedValue
+        Colour = ComboBoxColour.SelectedIndex == -1 ? null : ComboBoxColour.SelectedValue == (object)SELECT_OPTIONAL_VALUE ? null : (DocColours?)ComboBoxColour.SelectedValue,
+        KelibTushgan = ComboBoxKelibTushgan.SelectedIndex == -1 ? null : ComboBoxKelibTushgan.SelectedValue == (object)SELECT_OPTIONAL_VALUE ? null : (string)ComboBoxKelibTushgan.SelectedValue
       };
 
       _worker.RunWorkerAsync(filterModel);
