@@ -188,14 +188,8 @@ namespace RegisterDocs.GUI
         {
           query = query.Where(w => w.QayerdanKelibTushgan.CompareTo(filterModel.KelibTushgan) == 0);
         }
-
-        var models = query.OrderBy(o => new
-        {
-          o.HalEtishMuddat,
-          o.TegishliBoychaOrganQolganKun
-        }).ToArray();
-
-        doWorkEventArgs.Result = models;
+         
+        doWorkEventArgs.Result = query.ToArray();
       }
     }
 
